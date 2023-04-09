@@ -15,8 +15,9 @@ var _ = codec.FromInt8
 
 // GetSourcesReq struct implement
 type GetSourcesReq struct {
-	Page      int32 `json:"page"`
-	Page_size int32 `json:"page_size"`
+	Sname    string `json:"sname"`
+	Page     int32  `json:"page"`
+	PageSize int32  `json:"pageSize"`
 }
 
 func (st *GetSourcesReq) ResetDefault() {
@@ -32,12 +33,17 @@ func (st *GetSourcesReq) ReadFrom(readBuf *codec.Reader) error {
 	)
 	st.ResetDefault()
 
-	err = readBuf.ReadInt32(&st.Page, 0, false)
+	err = readBuf.ReadString(&st.Sname, 0, false)
 	if err != nil {
 		return err
 	}
 
-	err = readBuf.ReadInt32(&st.Page_size, 1, false)
+	err = readBuf.ReadInt32(&st.Page, 1, false)
+	if err != nil {
+		return err
+	}
+
+	err = readBuf.ReadInt32(&st.PageSize, 2, false)
 	if err != nil {
 		return err
 	}
@@ -84,12 +90,17 @@ func (st *GetSourcesReq) ReadBlock(readBuf *codec.Reader, tag byte, require bool
 // WriteTo encode struct to buffer
 func (st *GetSourcesReq) WriteTo(buf *codec.Buffer) (err error) {
 
-	err = buf.WriteInt32(st.Page, 0)
+	err = buf.WriteString(st.Sname, 0)
 	if err != nil {
 		return err
 	}
 
-	err = buf.WriteInt32(st.Page_size, 1)
+	err = buf.WriteInt32(st.Page, 1)
+	if err != nil {
+		return err
+	}
+
+	err = buf.WriteInt32(st.PageSize, 2)
 	if err != nil {
 		return err
 	}
@@ -119,13 +130,13 @@ func (st *GetSourcesReq) WriteBlock(buf *codec.Buffer, tag byte) error {
 
 // Source struct implement
 type Source struct {
-	Id         int64  `json:"id"`
-	Sid        uint16 `json:"sid"`
-	Sname      string `json:"sname"`
-	Desc       string `json:"desc"`
-	Conf_ver   uint16 `json:"conf_ver"`
-	Created_at string `json:"created_at"`
-	Updated_at string `json:"updated_at"`
+	Id        int64  `json:"id"`
+	Sid       uint16 `json:"sid"`
+	Sname     string `json:"sname"`
+	Desc      string `json:"desc"`
+	Confver   uint16 `json:"confver"`
+	CreatedAt string `json:"createdAt"`
+	UpdatedAt string `json:"updatedAt"`
 }
 
 func (st *Source) ResetDefault() {
@@ -161,17 +172,17 @@ func (st *Source) ReadFrom(readBuf *codec.Reader) error {
 		return err
 	}
 
-	err = readBuf.ReadUint16(&st.Conf_ver, 4, true)
+	err = readBuf.ReadUint16(&st.Confver, 4, true)
 	if err != nil {
 		return err
 	}
 
-	err = readBuf.ReadString(&st.Created_at, 5, true)
+	err = readBuf.ReadString(&st.CreatedAt, 5, true)
 	if err != nil {
 		return err
 	}
 
-	err = readBuf.ReadString(&st.Updated_at, 6, true)
+	err = readBuf.ReadString(&st.UpdatedAt, 6, true)
 	if err != nil {
 		return err
 	}
@@ -238,17 +249,17 @@ func (st *Source) WriteTo(buf *codec.Buffer) (err error) {
 		return err
 	}
 
-	err = buf.WriteUint16(st.Conf_ver, 4)
+	err = buf.WriteUint16(st.Confver, 4)
 	if err != nil {
 		return err
 	}
 
-	err = buf.WriteString(st.Created_at, 5)
+	err = buf.WriteString(st.CreatedAt, 5)
 	if err != nil {
 		return err
 	}
 
-	err = buf.WriteString(st.Updated_at, 6)
+	err = buf.WriteString(st.UpdatedAt, 6)
 	if err != nil {
 		return err
 	}
@@ -416,6 +427,237 @@ func (st *GetSourcesRsp) WriteTo(buf *codec.Buffer) (err error) {
 
 // WriteBlock encode struct
 func (st *GetSourcesRsp) WriteBlock(buf *codec.Buffer, tag byte) error {
+	var err error
+	err = buf.WriteHead(codec.StructBegin, tag)
+	if err != nil {
+		return err
+	}
+
+	err = st.WriteTo(buf)
+	if err != nil {
+		return err
+	}
+
+	err = buf.WriteHead(codec.StructEnd, 0)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// UpsertSourceReq struct implement
+type UpsertSourceReq struct {
+	Id    int64  `json:"id"`
+	Sname string `json:"sname"`
+	Desc  string `json:"desc"`
+}
+
+func (st *UpsertSourceReq) ResetDefault() {
+}
+
+// ReadFrom reads  from readBuf and put into struct.
+func (st *UpsertSourceReq) ReadFrom(readBuf *codec.Reader) error {
+	var (
+		err    error
+		length int32
+		have   bool
+		ty     byte
+	)
+	st.ResetDefault()
+
+	err = readBuf.ReadInt64(&st.Id, 0, false)
+	if err != nil {
+		return err
+	}
+
+	err = readBuf.ReadString(&st.Sname, 1, true)
+	if err != nil {
+		return err
+	}
+
+	err = readBuf.ReadString(&st.Desc, 2, true)
+	if err != nil {
+		return err
+	}
+
+	_ = err
+	_ = length
+	_ = have
+	_ = ty
+	return nil
+}
+
+// ReadBlock reads struct from the given tag , require or optional.
+func (st *UpsertSourceReq) ReadBlock(readBuf *codec.Reader, tag byte, require bool) error {
+	var (
+		err  error
+		have bool
+	)
+	st.ResetDefault()
+
+	have, err = readBuf.SkipTo(codec.StructBegin, tag, require)
+	if err != nil {
+		return err
+	}
+	if !have {
+		if require {
+			return fmt.Errorf("require UpsertSourceReq, but not exist. tag %d", tag)
+		}
+		return nil
+	}
+
+	err = st.ReadFrom(readBuf)
+	if err != nil {
+		return err
+	}
+
+	err = readBuf.SkipToStructEnd()
+	if err != nil {
+		return err
+	}
+	_ = have
+	return nil
+}
+
+// WriteTo encode struct to buffer
+func (st *UpsertSourceReq) WriteTo(buf *codec.Buffer) (err error) {
+
+	err = buf.WriteInt64(st.Id, 0)
+	if err != nil {
+		return err
+	}
+
+	err = buf.WriteString(st.Sname, 1)
+	if err != nil {
+		return err
+	}
+
+	err = buf.WriteString(st.Desc, 2)
+	if err != nil {
+		return err
+	}
+
+	return err
+}
+
+// WriteBlock encode struct
+func (st *UpsertSourceReq) WriteBlock(buf *codec.Buffer, tag byte) error {
+	var err error
+	err = buf.WriteHead(codec.StructBegin, tag)
+	if err != nil {
+		return err
+	}
+
+	err = st.WriteTo(buf)
+	if err != nil {
+		return err
+	}
+
+	err = buf.WriteHead(codec.StructEnd, 0)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// UpsertSourceRsp struct implement
+type UpsertSourceRsp struct {
+	Code   int32  `json:"code"`
+	Msg    string `json:"msg"`
+	Source Source `json:"source"`
+}
+
+func (st *UpsertSourceRsp) ResetDefault() {
+	st.Source.ResetDefault()
+}
+
+// ReadFrom reads  from readBuf and put into struct.
+func (st *UpsertSourceRsp) ReadFrom(readBuf *codec.Reader) error {
+	var (
+		err    error
+		length int32
+		have   bool
+		ty     byte
+	)
+	st.ResetDefault()
+
+	err = readBuf.ReadInt32(&st.Code, 0, true)
+	if err != nil {
+		return err
+	}
+
+	err = readBuf.ReadString(&st.Msg, 1, true)
+	if err != nil {
+		return err
+	}
+
+	err = st.Source.ReadBlock(readBuf, 2, true)
+	if err != nil {
+		return err
+	}
+
+	_ = err
+	_ = length
+	_ = have
+	_ = ty
+	return nil
+}
+
+// ReadBlock reads struct from the given tag , require or optional.
+func (st *UpsertSourceRsp) ReadBlock(readBuf *codec.Reader, tag byte, require bool) error {
+	var (
+		err  error
+		have bool
+	)
+	st.ResetDefault()
+
+	have, err = readBuf.SkipTo(codec.StructBegin, tag, require)
+	if err != nil {
+		return err
+	}
+	if !have {
+		if require {
+			return fmt.Errorf("require UpsertSourceRsp, but not exist. tag %d", tag)
+		}
+		return nil
+	}
+
+	err = st.ReadFrom(readBuf)
+	if err != nil {
+		return err
+	}
+
+	err = readBuf.SkipToStructEnd()
+	if err != nil {
+		return err
+	}
+	_ = have
+	return nil
+}
+
+// WriteTo encode struct to buffer
+func (st *UpsertSourceRsp) WriteTo(buf *codec.Buffer) (err error) {
+
+	err = buf.WriteInt32(st.Code, 0)
+	if err != nil {
+		return err
+	}
+
+	err = buf.WriteString(st.Msg, 1)
+	if err != nil {
+		return err
+	}
+
+	err = st.Source.WriteBlock(buf, 2)
+	if err != nil {
+		return err
+	}
+
+	return err
+}
+
+// WriteBlock encode struct
+func (st *UpsertSourceRsp) WriteBlock(buf *codec.Buffer, tag byte) error {
 	var err error
 	err = buf.WriteHead(codec.StructBegin, tag)
 	if err != nil {

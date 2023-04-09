@@ -1,5 +1,5 @@
 APP       := taskfactory
-TARGET    := http_access
+TARGET    := admin
 MFLAGS    :=
 DFLAGS    :=
 CONFIG    := client

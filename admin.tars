@@ -1,0 +1,67 @@
+module admin
+{
+    // GetSourcesReq 获取数据源列表请求结构
+    struct GetSourcesReq
+    {
+        0 optional string sname;
+        1 optional int page;
+        2 optional int pageSize;
+    };
+
+    // Source 数据源结构定义
+    // id 主键ID
+    // sid 数据源ID
+    // sname 数据源名称
+    // desc 数据源描述信息
+    // conf_ver 数据源当前在线的配置版本
+    // created_at 创建时间
+    // updated_at 更新时间
+    struct Source
+    {
+        0 require long id;
+        1 require unsigned short sid;
+        2 require string sname;
+        3 require string desc;
+        4 require unsigned short confver;
+        5 require string createdAt;
+        6 require string updatedAt;
+    };
+
+    // GetSourcesRsp 获取数据源列表响应结构
+    // code 状态码
+    // msg 错误消息
+    // sources 数据源列表
+    struct GetSourcesRsp
+    {
+        0 require int code;
+        1 require string msg;
+        2 require vector<Source> sources;
+    };
+
+    // UpsertSourceReq 创建或更新数据源请求结构
+    struct UpsertSourceReq
+    {
+        0 optional long id;
+        1 require string sname;
+        2 require string desc;
+    };
+
+    // UpsertSourceRsp 创建或更新数据源响应结构
+    // code 状态码
+    // msg 错误消息
+    // sources 数据源列表
+    struct UpsertSourceRsp
+    {
+        0 require int code;
+        1 require string msg;
+        2 require Source source;
+    };
+
+    interface adminService
+    {
+        // GetSources 获取数据源列表
+        GetSourcesRsp GetSources(GetSourcesReq req);
+        // UpsertSource 创建或更新数据源信息
+        UpsertSourceRsp UpsertSource(UpsertSourceReq req);
+    };
+};

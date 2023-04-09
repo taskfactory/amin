@@ -16,6 +16,10 @@ var engines *Engines
 var cfgs map[string]config
 var ErrNotFound = errors.New("record not found")
 
+const (
+	MaxPageLimit = 500
+)
+
 // Engines mysql client 结构
 type Engines struct {
 	sync.RWMutex
@@ -42,6 +46,7 @@ func init() {
 	})
 }
 
+// Init 初始化数据库配置
 func Init(cfgStr string) error {
 	err := yaml.Unmarshal([]byte(cfgStr), &cfgs)
 	if err != nil {

@@ -241,6 +241,214 @@ func (obj *AdminService) GetSourcesOneWayWithContext(tarsCtx context.Context, re
 	return ret, nil
 }
 
+// UpsertSource is the proxy function for the method defined in the tars file, with the context
+func (obj *AdminService) UpsertSource(req *UpsertSourceReq, opts ...map[string]string) (ret UpsertSourceRsp, err error) {
+	var (
+		length int32
+		have   bool
+		ty     byte
+	)
+	buf := codec.NewBuffer()
+	err = req.WriteBlock(buf, 1)
+	if err != nil {
+		return ret, err
+	}
+
+	var statusMap map[string]string
+	var contextMap map[string]string
+	if len(opts) == 1 {
+		contextMap = opts[0]
+	} else if len(opts) == 2 {
+		contextMap = opts[0]
+		statusMap = opts[1]
+	}
+	tarsResp := new(requestf.ResponsePacket)
+	tarsCtx := context.Background()
+
+	err = obj.servant.TarsInvoke(tarsCtx, 0, "UpsertSource", buf.ToBytes(), statusMap, contextMap, tarsResp)
+	if err != nil {
+		return ret, err
+	}
+
+	readBuf := codec.NewReader(tools.Int8ToByte(tarsResp.SBuffer))
+	err = ret.ReadBlock(readBuf, 0, true)
+	if err != nil {
+		return ret, err
+	}
+
+	if len(opts) == 1 {
+		for k := range contextMap {
+			delete(contextMap, k)
+		}
+		for k, v := range tarsResp.Context {
+			contextMap[k] = v
+		}
+	} else if len(opts) == 2 {
+		for k := range contextMap {
+			delete(contextMap, k)
+		}
+		for k, v := range tarsResp.Context {
+			contextMap[k] = v
+		}
+		for k := range statusMap {
+			delete(statusMap, k)
+		}
+		for k, v := range tarsResp.Status {
+			statusMap[k] = v
+		}
+	}
+	_ = length
+	_ = have
+	_ = ty
+	return ret, nil
+}
+
+// UpsertSourceWithContext is the proxy function for the method defined in the tars file, with the context
+func (obj *AdminService) UpsertSourceWithContext(tarsCtx context.Context, req *UpsertSourceReq, opts ...map[string]string) (ret UpsertSourceRsp, err error) {
+	var (
+		length int32
+		have   bool
+		ty     byte
+	)
+	buf := codec.NewBuffer()
+	err = req.WriteBlock(buf, 1)
+	if err != nil {
+		return ret, err
+	}
+
+	trace, ok := current.GetTarsTrace(tarsCtx)
+	if ok && trace.Call() {
+		var traceParam string
+		trace.NewSpan()
+		traceParamFlag := trace.NeedTraceParam(tarstrace.EstCS, uint(buf.Len()))
+		if traceParamFlag == tarstrace.EnpNormal {
+			value := map[string]interface{}{}
+			value["req"] = req
+			jm, _ := json.Marshal(value)
+			traceParam = string(jm)
+		} else if traceParamFlag == tarstrace.EnpOverMaxLen {
+			traceParam = `{"trace_param_over_max_len":true}`
+		}
+		tars.Trace(trace.GetTraceKey(tarstrace.EstCS), tarstrace.AnnotationCS, tars.GetClientConfig().ModuleName, obj.servant.Name(), "UpsertSource", 0, traceParam, "")
+	}
+
+	var statusMap map[string]string
+	var contextMap map[string]string
+	if len(opts) == 1 {
+		contextMap = opts[0]
+	} else if len(opts) == 2 {
+		contextMap = opts[0]
+		statusMap = opts[1]
+	}
+
+	tarsResp := new(requestf.ResponsePacket)
+	err = obj.servant.TarsInvoke(tarsCtx, 0, "UpsertSource", buf.ToBytes(), statusMap, contextMap, tarsResp)
+	if err != nil {
+		return ret, err
+	}
+
+	readBuf := codec.NewReader(tools.Int8ToByte(tarsResp.SBuffer))
+	err = ret.ReadBlock(readBuf, 0, true)
+	if err != nil {
+		return ret, err
+	}
+
+	if ok && trace.Call() {
+		var traceParam string
+		traceParamFlag := trace.NeedTraceParam(tarstrace.EstCR, uint(readBuf.Len()))
+		if traceParamFlag == tarstrace.EnpNormal {
+			value := map[string]interface{}{}
+			value[""] = ret
+			jm, _ := json.Marshal(value)
+			traceParam = string(jm)
+		} else if traceParamFlag == tarstrace.EnpOverMaxLen {
+			traceParam = `{"trace_param_over_max_len":true}`
+		}
+		tars.Trace(trace.GetTraceKey(tarstrace.EstCR), tarstrace.AnnotationCR, tars.GetClientConfig().ModuleName, obj.servant.Name(), "UpsertSource", tarsResp.IRet, traceParam, "")
+	}
+
+	if len(opts) == 1 {
+		for k := range contextMap {
+			delete(contextMap, k)
+		}
+		for k, v := range tarsResp.Context {
+			contextMap[k] = v
+		}
+	} else if len(opts) == 2 {
+		for k := range contextMap {
+			delete(contextMap, k)
+		}
+		for k, v := range tarsResp.Context {
+			contextMap[k] = v
+		}
+		for k := range statusMap {
+			delete(statusMap, k)
+		}
+		for k, v := range tarsResp.Status {
+			statusMap[k] = v
+		}
+	}
+	_ = length
+	_ = have
+	_ = ty
+	return ret, nil
+}
+
+// UpsertSourceOneWayWithContext is the proxy function for the method defined in the tars file, with the context
+func (obj *AdminService) UpsertSourceOneWayWithContext(tarsCtx context.Context, req *UpsertSourceReq, opts ...map[string]string) (ret UpsertSourceRsp, err error) {
+	var (
+		length int32
+		have   bool
+		ty     byte
+	)
+	buf := codec.NewBuffer()
+	err = req.WriteBlock(buf, 1)
+	if err != nil {
+		return ret, err
+	}
+
+	var statusMap map[string]string
+	var contextMap map[string]string
+	if len(opts) == 1 {
+		contextMap = opts[0]
+	} else if len(opts) == 2 {
+		contextMap = opts[0]
+		statusMap = opts[1]
+	}
+
+	tarsResp := new(requestf.ResponsePacket)
+	err = obj.servant.TarsInvoke(tarsCtx, 1, "UpsertSource", buf.ToBytes(), statusMap, contextMap, tarsResp)
+	if err != nil {
+		return ret, err
+	}
+
+	if len(opts) == 1 {
+		for k := range contextMap {
+			delete(contextMap, k)
+		}
+		for k, v := range tarsResp.Context {
+			contextMap[k] = v
+		}
+	} else if len(opts) == 2 {
+		for k := range contextMap {
+			delete(contextMap, k)
+		}
+		for k, v := range tarsResp.Context {
+			contextMap[k] = v
+		}
+		for k := range statusMap {
+			delete(statusMap, k)
+		}
+		for k, v := range tarsResp.Status {
+			statusMap[k] = v
+		}
+	}
+	_ = length
+	_ = have
+	_ = ty
+	return ret, nil
+}
+
 // SetServant sets servant for the service.
 func (obj *AdminService) SetServant(servant m.Servant) {
 	obj.servant = servant
@@ -268,9 +476,11 @@ func (obj *AdminService) AddServantWithContext(imp AdminServiceServantWithContex
 
 type AdminServiceServant interface {
 	GetSources(req *GetSourcesReq) (ret GetSourcesRsp, err error)
+	UpsertSource(req *UpsertSourceReq) (ret UpsertSourceRsp, err error)
 }
 type AdminServiceServantWithContext interface {
 	GetSources(tarsCtx context.Context, req *GetSourcesReq) (ret GetSourcesRsp, err error)
+	UpsertSource(tarsCtx context.Context, req *UpsertSourceReq) (ret UpsertSourceRsp, err error)
 }
 
 // Dispatch is used to call the server side implement for the method defined in the tars file. withContext shows using context or not.
@@ -407,6 +617,132 @@ func (obj *AdminService) Dispatch(tarsCtx context.Context, val interface{}, tars
 				traceParam = `{"trace_param_over_max_len":true}`
 			}
 			tars.Trace(trace.GetTraceKey(tarstrace.EstSS), tarstrace.AnnotationSS, tars.GetClientConfig().ModuleName, tarsReq.SServantName, "GetSources", 0, traceParam, "")
+		}
+
+	case "UpsertSource":
+		var req UpsertSourceReq
+
+		if tarsReq.IVersion == basef.TARSVERSION {
+
+			err = req.ReadBlock(readBuf, 1, true)
+			if err != nil {
+				return err
+			}
+
+		} else if tarsReq.IVersion == basef.TUPVERSION {
+			reqTup := tup.NewUniAttribute()
+			reqTup.Decode(readBuf)
+
+			var tupBuffer []byte
+
+			reqTup.GetBuffer("req", &tupBuffer)
+			readBuf.Reset(tupBuffer)
+			err = req.ReadBlock(readBuf, 0, true)
+			if err != nil {
+				return err
+			}
+
+		} else if tarsReq.IVersion == basef.JSONVERSION {
+			var jsonData map[string]interface{}
+			decoder := json.NewDecoder(bytes.NewReader(readBuf.ToBytes()))
+			decoder.UseNumber()
+			err = decoder.Decode(&jsonData)
+			if err != nil {
+				return fmt.Errorf("decode reqpacket failed, error: %+v", err)
+			}
+			{
+				jsonStr, _ := json.Marshal(jsonData["req"])
+				req.ResetDefault()
+				if err = json.Unmarshal(jsonStr, &req); err != nil {
+					return err
+				}
+			}
+
+		} else {
+			err = fmt.Errorf("decode reqpacket fail, error version: %d", tarsReq.IVersion)
+			return err
+		}
+
+		trace, ok := current.GetTarsTrace(tarsCtx)
+		if ok && trace.Call() {
+			var traceParam string
+			traceParamFlag := trace.NeedTraceParam(tarstrace.EstSR, uint(readBuf.Len()))
+			if traceParamFlag == tarstrace.EnpNormal {
+				value := map[string]interface{}{}
+				value["req"] = req
+				jm, _ := json.Marshal(value)
+				traceParam = string(jm)
+			} else if traceParamFlag == tarstrace.EnpOverMaxLen {
+				traceParam = `{"trace_param_over_max_len":true}`
+			}
+			tars.Trace(trace.GetTraceKey(tarstrace.EstSR), tarstrace.AnnotationSR, tars.GetClientConfig().ModuleName, tarsReq.SServantName, "UpsertSource", 0, traceParam, "")
+		}
+
+		var funRet UpsertSourceRsp
+		if !withContext {
+			imp := val.(AdminServiceServant)
+			funRet, err = imp.UpsertSource(&req)
+		} else {
+			imp := val.(AdminServiceServantWithContext)
+			funRet, err = imp.UpsertSource(tarsCtx, &req)
+		}
+
+		if err != nil {
+			return err
+		}
+
+		if tarsReq.IVersion == basef.TARSVERSION {
+			buf.Reset()
+
+			err = funRet.WriteBlock(buf, 0)
+			if err != nil {
+				return err
+			}
+
+		} else if tarsReq.IVersion == basef.TUPVERSION {
+			rspTup := tup.NewUniAttribute()
+
+			err = funRet.WriteBlock(buf, 0)
+			if err != nil {
+				return err
+			}
+
+			rspTup.PutBuffer("", buf.ToBytes())
+			rspTup.PutBuffer("tars_ret", buf.ToBytes())
+
+			buf.Reset()
+			err = rspTup.Encode(buf)
+			if err != nil {
+				return err
+			}
+		} else if tarsReq.IVersion == basef.JSONVERSION {
+			rspJson := map[string]interface{}{}
+			rspJson["tars_ret"] = funRet
+
+			var rspByte []byte
+			if rspByte, err = json.Marshal(rspJson); err != nil {
+				return err
+			}
+
+			buf.Reset()
+			err = buf.WriteSliceUint8(rspByte)
+			if err != nil {
+				return err
+			}
+		}
+
+		if ok && trace.Call() {
+			var traceParam string
+			traceParamFlag := trace.NeedTraceParam(tarstrace.EstSS, uint(buf.Len()))
+			if traceParamFlag == tarstrace.EnpNormal {
+				value := map[string]interface{}{}
+				value[""] = funRet
+				jm, _ := json.Marshal(value)
+				traceParam = string(jm)
+			} else if traceParamFlag == tarstrace.EnpOverMaxLen {
+				traceParam = `{"trace_param_over_max_len":true}`
+			}
+			tars.Trace(trace.GetTraceKey(tarstrace.EstSS), tarstrace.AnnotationSS, tars.GetClientConfig().ModuleName, tarsReq.SServantName, "UpsertSource", 0, traceParam, "")
 		}
 
 	default:
