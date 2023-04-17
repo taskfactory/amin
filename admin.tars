@@ -27,6 +27,15 @@ module admin
         6 require string updatedAt;
     };
 
+    // SourcePagination 数据来源分页响应结构
+    struct SourcePagination
+    {
+        0 require int page;
+        1 require int pageSize;
+        2 require int total;
+        3 require vector<Source> sources;
+    };
+
     // GetSourcesRsp 获取数据源列表响应结构
     // code 状态码
     // msg 错误消息
@@ -35,7 +44,7 @@ module admin
     {
         0 require int code;
         1 require string msg;
-        2 require vector<Source> sources;
+        2 require SourcePagination data;
     };
 
     // UpsertSourceReq 创建或更新数据源请求结构

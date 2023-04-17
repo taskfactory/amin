@@ -10,18 +10,17 @@ import (
 )
 
 // List 列表查询
-func List(ctx context.Context, sname string, page, pageSize int32) ([]proto.Source, error) {
+func List(ctx context.Context, sname string, page, pageSize int32) (int32, []proto.Source, error) {
 	st := mysql.NewStatement()
 	if sname != "" {
 		st.AndLike("sname", sname)
 	}
 	st.OrderBy("id asc").Limit(int(pageSize), int(pageSize*(page-1)))
-
-	sources, err := tblsources.NewModel().
-		FindAll(ctx, st)
+	count, sources, err := tblsources.NewModel().
+		FindAndCount(ctx, st)
 	if err != nil {
 		err = errs.Newf(errs.CodeDBRead, "failed to query db,err:%v", err)
-		return nil, err
+		return 0, nil, err
 	}
 
 	var ret []proto.Source
@@ -29,7 +28,7 @@ func List(ctx context.Context, sname string, page, pageSize int32) ([]proto.Sour
 		ret = append(ret, source.ToProto())
 	}
 
-	return ret, nil
+	return int32(count), ret, nil
 }
 
 // Upsert 创建或更新

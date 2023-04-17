@@ -17,28 +17,31 @@ func NewServ() *Serv {
 
 // GetSources 获取来源列表
 func (s *Serv) GetSources(ctx context.Context, req *admin.GetSourcesReq) (admin.GetSourcesRsp, error) {
-	var ret admin.GetSourcesRsp
-	data, err := sources.List(ctx, req.Sname, req.Page, req.PageSize)
+	var rsp admin.GetSourcesRsp
+	count, data, err := sources.List(ctx, req.Sname, req.Page, req.PageSize)
 	if err != nil {
-		ret.Code, ret.Msg = errs.Code(err), errs.Msg(err)
+		rsp.Code, rsp.Msg = errs.Code(err), errs.Msg(err)
 	}
-	ret.Sources = data
+	rsp.Data.Page = req.Page
+	rsp.Data.PageSize = req.PageSize
+	rsp.Data.Total = count
+	rsp.Data.Sources = data
 
-	return ret, err
+	return rsp, err
 }
 
 // UpsertSource 更新或创建来源
 func (s *Serv) UpsertSource(ctx context.Context, req *admin.UpsertSourceReq) (admin.UpsertSourceRsp, error) {
-	var ret admin.UpsertSourceRsp
+	var rsp admin.UpsertSourceRsp
 	source, err := sources.Upsert(ctx, req.Id, req.Sname, req.Desc)
 	if err != nil {
-		ret.Code, ret.Msg = errs.Code(err), errs.Msg(err)
+		rsp.Code, rsp.Msg = errs.Code(err), errs.Msg(err)
 	}
 	if source != nil {
-		ret.Source = *source
+		rsp.Source = *source
 	}
 
-	return ret, err
+	return rsp, err
 }
 
 // Init servant

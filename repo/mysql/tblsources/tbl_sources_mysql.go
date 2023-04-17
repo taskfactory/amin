@@ -65,6 +65,28 @@ func (m *Model) FindAll(ctx context.Context, st *mysql.Statement) ([]*entity.Sou
 	return rows, nil
 }
 
+// FindAndCount 多条查询，返回count
+func (m *Model) FindAndCount(ctx context.Context, st *mysql.Statement) (int64, []*entity.Source, error) {
+	clt, err := mysql.NewSession(m.DBName())
+	if err != nil {
+		return 0, nil, err
+	}
+	defer clt.Close()
+
+	if st.GetLimit() == 0 || st.GetLimit() > mysql.MaxPageLimit {
+		st.Limit(mysql.MaxPageLimit)
+	}
+	var rows []*entity.Source
+	clt = st.BuildSelect(clt.Table(m.TableName())).Context(ctx)
+	count, err := clt.FindAndCount(&rows)
+	if err != nil {
+		return 0, nil, err
+	}
+	clt.MustCols()
+
+	return count, rows, nil
+}
+
 // Insert 插入单条记录
 func (m *Model) Insert(ctx context.Context, row *entity.Source) error {
 	clt, err := mysql.NewSession(m.DBName())
